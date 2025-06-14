@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Numeric, DateTime, Integer, JSON
+from sqlalchemy import Column, String, Numeric, DateTime, Integer, JSON, Float
 from sqlalchemy.sql import func
 from uuid import uuid4
 from .session import Base
@@ -18,3 +18,11 @@ class PollJob(Base):
     symbols   = Column(JSON)        # ["AAPL","MSFT"]
     interval  = Column(Integer)     # seconds
     provider  = Column(String)
+
+class MovingAverage(Base):
+    __tablename__ = "moving_averages"
+    id         = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    symbol     = Column(String, index=True)
+    window     = Column(Integer)          # 5, 10, …
+    ma_value   = Column(Float, nullable=False)
+    calc_time  = Column(DateTime(timezone=True), server_default=func.now(), index=True)

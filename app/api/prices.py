@@ -4,7 +4,7 @@ from app.db.session import get_session
 from app.db import models
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi.encoders import jsonable_encoder
-
+from app.core.ma import calculate_and_upsert_ma
 
 router = APIRouter(prefix="/prices", tags=["prices"])
 
@@ -29,6 +29,7 @@ async def latest(
     )
     db.add(new_row)
     await db.commit()
+    await calculate_and_upsert_ma(symbol, window=5)
 
     return dto.model_dump()         # same JSON as before
 
