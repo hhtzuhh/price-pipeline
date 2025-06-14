@@ -21,8 +21,7 @@ class PollJob(Base):
 
 class MovingAverage(Base):
     __tablename__ = "moving_averages"
-    id         = Column(String, primary_key=True, default=lambda: str(uuid4()))
-    symbol     = Column(String, index=True)
-    window     = Column(Integer)          # 5, 10, …
+    symbol     = Column(String, primary_key=True)
+    window     = Column(Integer, primary_key=True)          # 5, 10, …
     ma_value   = Column(Float, nullable=False)
     calc_time  = Column(DateTime(timezone=True), server_default=func.now(), index=True)
