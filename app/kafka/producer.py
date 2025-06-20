@@ -1,7 +1,7 @@
 import json, os
 from confluent_kafka import Producer, KafkaException
 
-BOOTSTRAP = os.getenv("KAFKA_BOOTSTRAP_SERVERS", "localhost:9092")
+BOOTSTRAP = os.getenv("KAFKA_BOOTSTRAP_SERVERS", "")
 _producer = Producer(
     {"bootstrap.servers": BOOTSTRAP, "enable.idempotence": True}
 )
