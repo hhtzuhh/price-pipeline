@@ -2,7 +2,7 @@ from confluent_kafka import Consumer, KafkaException
 import json
 import os
 
-BOOTSTRAP = os.getenv("KAFKA_BOOTSTRAP", "localhost:9092")
+BOOTSTRAP = os.getenv("KAFKA_BOOTSTRAP_SERVERS", "localhost:9092")
 
 cfg = {
     "bootstrap.servers": BOOTSTRAP,

@@ -5,7 +5,7 @@ from sqlalchemy import select
 from app.db.session import AsyncSessionLocal
 from app.db import models
 
-BOOTSTRAP = os.getenv("KAFKA_BOOTSTRAP", "localhost:9092")
+BOOTSTRAP = os.getenv("KAFKA_BOOTSTRAP_SERVERS", "localhost:9092")
 
 cfg = {
     "bootstrap.servers": BOOTSTRAP,
