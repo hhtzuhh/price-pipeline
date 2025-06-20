@@ -1,20 +1,18 @@
-from app.providers.yahoo import fetch as fetch_yahoo
 from app.db.session import AsyncSessionLocal
 from app.db import models
 from app.kafka.producer import send_price_event
-
-async def poll_prices(symbols: list[str], provider: str):
+from app.providers import PriceProvider
+async def poll_prices(symbols: list[str], provider: PriceProvider):
     dtos=[]
     async with AsyncSessionLocal() as db:
         for sym in symbols:
-            dto = await fetch_yahoo(sym)
-            dto.provider = provider
+            dto = await provider.fetch(sym)
             dtos.append(dto)
             db.add(models.RawPrice(
                 symbol=dto.symbol,
                 price=dto.price,
                 timestamp=dto.timestamp,
-                provider=provider,
+                provider=dto.provider,
             ))
         await db.commit()
         # 🔸 outside the DB session so we open a fresh one inside helper

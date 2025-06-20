@@ -5,13 +5,13 @@ from app.core.scheduler import scheduler
 from app.core.tasks import poll_prices
 from app.db.session import get_session
 from app.db import models
-
+from app.providers import get_provider, PriceProvider
 router = APIRouter(prefix="/prices", tags=["poll"])
 
 class PollRequest(BaseModel):
     symbols: list[str] = Field(..., min_items=1)
     interval: int = Field(..., gt=0)          # seconds
-    provider: str = "yfinance"
+    provider: str = "default"
 
 @router.post("/poll", status_code=status.HTTP_202_ACCEPTED)
 async def create_poll_job(req: PollRequest, db = Depends(get_session)):
@@ -25,6 +25,9 @@ async def create_poll_job(req: PollRequest, db = Depends(get_session)):
         provider=req.provider,
     ))
     await db.commit()
+    
+    provider: PriceProvider = get_provider(req.provider)
+
 
     # 2️⃣  schedule task
     scheduler.add_job(
@@ -32,7 +35,7 @@ async def create_poll_job(req: PollRequest, db = Depends(get_session)):
         "interval",
         id=job_id,
         seconds=req.interval, # run this job every `interval` seconds
-        args=[req.symbols, req.provider],
+        args=[req.symbols, provider],
         coalesce=True, max_instances=1, replace_existing=True,
     )
 
