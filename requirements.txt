@@ -2,6 +2,8 @@ aiosqlite==0.21.0
 annotated-types==0.7.0
 anyio==4.9.0
 APScheduler==3.11.0
+async-timeout==5.0.1
+asyncpg==0.30.0
 beautifulsoup4==4.13.4
 certifi==2025.4.26
 cffi==1.17.1

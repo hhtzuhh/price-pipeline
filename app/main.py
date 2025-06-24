@@ -4,7 +4,7 @@ from app.api.prices import router as prices_router
 from app.api.poll import router as poll_router
 from app.api.ma import router as ma_router
 from dotenv import load_dotenv
-
+from app.db.session import engine, Base
 # Import your scheduler instance.
 # Ensure that `scheduler.start()` and `scheduler.shutdown()`
 # are NOT called directly in app/core/scheduler.py at the module level.
@@ -20,6 +20,11 @@ load_dotenv()
 async def lifespan(app: FastAPI):
     # --- Startup Events ---
     print("FastAPI application startup initiated.")
+
+    # Create tables
+    print("Creating database tables...")
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
 
     # Initialize and start APScheduler here.
     # This ensures the event loop is running before scheduler.start() is called.
