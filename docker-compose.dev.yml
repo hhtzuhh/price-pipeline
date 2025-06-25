@@ -3,7 +3,9 @@ version: "3.9"
 services:
   # ──────────── FastAPI backend ────────────
   api:
-    image: ${DOCKER_USERNAME}/market-data-service:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
       - "8000:8000"
     env_file: ./.env
@@ -40,7 +42,9 @@ services:
  # ──────────── MA Consumer ────────────
   ma_consumer:
     restart: on-failure
-    image: ${DOCKER_USERNAME}/market-data-service:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
     command: ["python", "-m", "app.kafka.ma_consumer"]
     env_file: ./.env
     depends_on:
