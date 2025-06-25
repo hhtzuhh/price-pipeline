@@ -70,8 +70,8 @@ jobs:
           # as the 'run' command context provides them already.
           # The EOF marker MUST NOT BE QUOTED ('EOF') if you want interpolation here.
           # We'll use a unique marker like EOT (End Of Transmission) to avoid conflicts.
+            ssh ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << EOT
 
-          ssh -i ~/.ssh/id_rsa ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << EOT
             # Set the shell on the remote host to bash for robust scripting
             # and ensure error propagation
             set -euo pipefail
