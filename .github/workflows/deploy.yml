@@ -42,7 +42,7 @@ jobs:
           ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts # Add EC2 host to known_hosts to avoid host key checking prompts
           chmod 600 ~/.ssh/known_hosts # Set correct permissions for known_hosts file
 
-      -      - name: Deploy to EC2 with Docker Compose
+      - name: Deploy to EC2 with Docker Compose
         env:
           # Define environment variables that will be available within the 'run' block
           # These are for passing values INTO the EC2 shell via the `EOF` block
