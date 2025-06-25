@@ -106,14 +106,13 @@ jobs:
 
 
             # Create or update the .env file on the EC2 instance
-            # Use the environment variables passed from GitHub Actions
-            # Note: We are using \${VAR_NAME} inside EOT to defer shell expansion to EC2
-            echo "POSTGRES_DB=\${POSTGRES_DB}" > .env
-            echo "POSTGRES_USER=\${POSTGRES_USER}" >> .env
-            echo "POSTGRES_PASSWORD=\${POSTGRES_PASSWORD}" >> .env
-            echo "ALPHA_VANTAGE_API_KEY=\${ALPHA_VANTAGE_API_KEY}" >> .env
-            echo "KAFKA_BOOTSTRAP_SERVERS=\${KAFKA_BOOTSTRAP_SERVERS}" >> .env
-            echo "DATABASE_URL=\${DATABASE_URL}" >> .env
+
+            echo "POSTGRES_DB=${POSTGRES_DB}" > .env
+            echo "POSTGRES_USER=${POSTGRES_USER}" >> .env
+            echo "POSTGRES_PASSWORD=${POSTGRES_PASSWORD}" >> .env
+            echo "ALPHA_VANTAGE_API_KEY=${ALPHA_VANTAGE_API_KEY}" >> .env
+            echo "KAFKA_BOOTSTRAP_SERVERS=${KAFKA_BOOTSTRAP_SERVERS}" >> .env
+            echo "DATABASE_URL=${DATABASE_URL}" >> .env
             echo ".env file updated."
 
             # Log in to Docker Hub on the EC2 instance
@@ -128,13 +127,6 @@ jobs:
             # Bring up the Docker services in detached mode, removing any old orphaned containers
             docker compose up -d --remove-orphans
             echo "Docker services brought up."
-
-            # --- ADD THIS DEBUG BLOCK ---
-            echo "--- Checking Kafka Container Status and Logs ---"
-            docker compose ps -a # Show all container statuses
-            docker compose logs kafka_kraft # Get logs specifically for the kafka_kraft service
-            echo "--- End Kafka Debug ---"
-            # ---------------------------
 
 
             # Clean up Docker images not used by any container (optional, helps save disk space)
