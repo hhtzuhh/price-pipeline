@@ -89,18 +89,17 @@ jobs:
             # Create or update the .env file on the EC2 instance
             # Use the environment variables passed from GitHub Actions
             # Note: We are using \${VAR_NAME} inside EOT to defer shell expansion to EC2
-            echo "POSTGRES_DB=\${POSTGRES_DB_ENV}" > .env
-            echo "POSTGRES_USER=\${POSTGRES_USER_ENV}" >> .env
-            echo "POSTGRES_PASSWORD=\${POSTGRES_PASSWORD_ENV}" >> .env
-            echo "ALPHA_VANTAGE_API_KEY=\${ALPHA_VANTAGE_API_KEY_ENV}" >> .env
-            echo "KAFKA_BOOTSTRAP_SERVERS=\${KAFKA_BOOTSTRAP_SERVERS_ENV}" >> .env
-            echo "DATABASE_URL=\${DATABASE_URL_ENV}" >> .env
-
+            echo "POSTGRES_DB=\${POSTGRES_DB}" > .env
+            echo "POSTGRES_USER=\${POSTGRES_USER}" >> .env
+            echo "POSTGRES_PASSWORD=\${POSTGRES_PASSWORD}" >> .env
+            echo "ALPHA_VANTAGE_API_KEY=\${ALPHA_VANTAGE_API_KEY}" >> .env
+            echo "KAFKA_BOOTSTRAP_SERVERS=\${KAFKA_BOOTSTRAP_SERVERS}" >> .env
+            echo "DATABASE_URL=\${DATABASE_URL}" >> .env
             echo ".env file updated."
 
             # Log in to Docker Hub on the EC2 instance
             # DOCKER_USERNAME_ENV and DOCKER_PASSWORD_ENV are directly passed from the workflow 'env'
-            echo "\${DOCKER_PASSWORD_ENV}" | docker login --username "\${DOCKER_USERNAME_ENV}" --password-stdin
+            echo "\${DOCKER_PASSWORD}" | docker login --username "\${DOCKER_USERNAME}" --password-stdin
             echo "Logged into Docker Hub."
 
             # Pull the latest Docker images as defined in docker-compose.yml
