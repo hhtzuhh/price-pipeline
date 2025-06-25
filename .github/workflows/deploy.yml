@@ -129,6 +129,14 @@ jobs:
             docker compose up -d --remove-orphans
             echo "Docker services brought up."
 
+            # --- ADD THIS DEBUG BLOCK ---
+            echo "--- Checking Kafka Container Status and Logs ---"
+            docker compose ps -a # Show all container statuses
+            docker compose logs kafka_kraft # Get logs specifically for the kafka_kraft service
+            echo "--- End Kafka Debug ---"
+            # ---------------------------
+
+
             # Clean up Docker images not used by any container (optional, helps save disk space)
             docker image prune -f
             echo "Docker images pruned."
