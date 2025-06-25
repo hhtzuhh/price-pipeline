@@ -63,18 +63,8 @@ jobs:
           # However, to prevent unintended shell expansion on the runner for variables
           # intended for the EC2, we still need careful quoting or pass via ENV.
             
-            ssh \
-            -o SendEnv=REPO_NAME \ # <-- This sends the REPO_NAME from the runner to EC2
-            -o SendEnv=POSTGRES_DB \
-            -o SendEnv=POSTGRES_USER \
-            -o SendEnv=POSTGRES_PASSWORD \
-            -o SendEnv=ALPHA_VANTAGE_API_KEY \
-            -o SendEnv=KAFKA_BOOTSTRAP_SERVERS \
-            -o SendEnv=DATABASE_URL \
-            -o SendEnv=DOCKER_USERNAME \
-            -o SendEnv=DOCKER_PASSWORD \
-            ${{ env.EC2_USER }}@${{ env.EC2_HOST }} << 'EOF' 
-
+            ssh -o SendEnv=REPO_NAME -o SendEnv=POSTGRES_DB -o SendEnv=POSTGRES_USER -o SendEnv=POSTGRES_PASSWORD -o SendEnv=ALPHA_VANTAGE_API_KEY -o SendEnv=KAFKA_BOOTSTRAP_SERVERS -o SendEnv=DATABASE_URL -o SendEnv=DOCKER_USERNAME -o SendEnv=DOCKER_PASSWORD ${{ env.EC2_USER }}@${{ env.EC2_HOST }} << 'EOF'
+            
             # Set the shell on the remote host to bash for robust scripting
             # and ensure error propagation
             set -euo pipefail
