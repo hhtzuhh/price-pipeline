@@ -72,25 +72,38 @@ jobs:
             # and ensure error propagation
             set -euo pipefail
 
+            # Create the project directory if it doesn't exist
+            mkdir -p ~/my-project
+            cd ~/my-project
+
+            # --- ADD THESE DEBUG LINES AND FIX FOR GIT CLONE ---
             echo "--- Debugging REPO_NAME ---"
             echo "Value of REPO_NAME on EC2: '${REPO_NAME}'"
-            echo "Expected full clone URL: 'https://github.com/${REPO_NAME}.git'"
+            
+            # Construct the full clone URL explicitly as a variable
+            CLONE_URL="https://github.com/${REPO_NAME}.git" # Shell expansion happens here!
+            echo "Constructed CLONE_URL for git: '${CLONE_URL}'"
             echo "--- End Debugging ---"
-
+            # --------------------------------------------------
 
             # Create the project directory if it doesn't exist
             mkdir -p ~/my-project
             cd ~/my-project
 
             # Clone or pull the latest code from your GitHub repository
-            # Use the REPO_NAME environment variable passed from GitHub Actions
             if [ -d .git ]; then
-              echo "Pulling latest code..."
-              git pull
+              echo "Pulling latest code from: ${CLONE_URL}" # Echo for clarity
+              git pull # For 'git pull', the remote 'origin' should already be configured with the correct URL.
+                      # If you later see errors with pull, you might need 'git remote set-url origin "${CLONE_URL}"'
+                      # or ensure the initial clone was correct.
             else
-              echo "Cloning repository..."
-              git clone https://github.com/\${REPO_NAME}.git .
+              echo "Cloning repository from: ${CLONE_URL}" # Echo for clarity
+              git clone "${CLONE_URL}" . # <-- Use the explicitly constructed and quoted URL
             fi
+
+
+
+
 
             # Create or update the .env file on the EC2 instance
             # Use the environment variables passed from GitHub Actions
