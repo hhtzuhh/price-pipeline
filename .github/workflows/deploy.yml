@@ -44,27 +44,30 @@ jobs:
 
       - name: Deploy to EC2 with Docker Compose
         env:
+          # EC2 details
+          EC2_USER: ${{ secrets.EC2_USER }}
+          EC2_HOST: ${{ secrets.EC2_HOST }}
           # Define environment variables that will be available within the 'run' block
           # These are for passing values INTO the EC2 shell via the `EOF` block
           REPO_NAME: ${{ github.repository }} # Pass the full repo name
-          POSTGRES_DB_ENV: ${{ secrets.POSTGRES_DB }}
-          POSTGRES_USER_ENV: ${{ secrets.POSTGRES_USER }}
-          POSTGRES_PASSWORD_ENV: ${{ secrets.POSTGRES_PASSWORD }}
-          ALPHA_VANTAGE_API_KEY_ENV: ${{ secrets.ALPHA_VANTAGE_API_KEY }}
-          KAFKA_BOOTSTRAP_SERVERS_ENV: ${{ secrets.KAFKA_BOOTSTRAP_SERVERS }}
-          DATABASE_URL_ENV: ${{ secrets.DATABASE_URL }}
+          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          ALPHA_VANTAGE_API_KEY: ${{ secrets.ALPHA_VANTAGE_API_KEY }}
+          KAFKA_BOOTSTRAP_SERVERS: ${{ secrets.KAFKA_BOOTSTRAP_SERVERS }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
           # Docker Hub credentials, specifically for the 'docker login' inside the EOF block
-          DOCKER_USERNAME_ENV: ${{ secrets.DOCKER_USERNAME }}
-          DOCKER_PASSWORD_ENV: ${{ secrets.DOCKER_PASSWORD }}
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
 
         run: |
           # Use HERE-document with a non-quoted EOF to allow variable expansion
           # However, to prevent unintended shell expansion on the runner for variables
           # intended for the EC2, we still need careful quoting or pass via ENV.
-            
-            ssh -o SendEnv=REPO_NAME -o SendEnv=POSTGRES_DB -o SendEnv=POSTGRES_USER -o SendEnv=POSTGRES_PASSWORD -o SendEnv=ALPHA_VANTAGE_API_KEY -o SendEnv=KAFKA_BOOTSTRAP_SERVERS -o SendEnv=DATABASE_URL -o SendEnv=DOCKER_USERNAME -o SendEnv=DOCKER_PASSWORD ${{ env.EC2_USER }}@${{ env.EC2_HOST }} << 'EOF'
-            
+
+          ssh -o SendEnv=REPO_NAME -o SendEnv=POSTGRES_DB -o SendEnv=POSTGRES_USER -o SendEnv=POSTGRES_PASSWORD -o SendEnv=ALPHA_VANTAGE_API_KEY -o SendEnv=KAFKA_BOOTSTRAP_SERVERS -o SendEnv=DATABASE_URL -o SendEnv=DOCKER_USERNAME -o SendEnv=DOCKER_PASSWORD ${{ env.EC2_USER }}@${{ env.EC2_HOST }} << 'EOF'
+
             # Set the shell on the remote host to bash for robust scripting
             # and ensure error propagation
             set -euo pipefail
