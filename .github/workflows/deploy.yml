@@ -118,7 +118,7 @@ jobs:
 
             # Log in to Docker Hub on the EC2 instance
             # DOCKER_USERNAME_ENV and DOCKER_PASSWORD_ENV are directly passed from the workflow 'env'
-            echo "\${DOCKER_PASSWORD}" | docker login --username "\${DOCKER_USERNAME}" --password-stdin
+            echo "${DOCKER_PASSWORD}" | docker login --username "${DOCKER_USERNAME}" --password-stdin
             echo "Logged into Docker Hub."
 
             # Pull the latest Docker images as defined in docker-compose.yml
