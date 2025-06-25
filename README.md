@@ -92,7 +92,7 @@ The application will be available at `http://localhost:8000`.
 -   `GET /ma/{symbol}`: Get the moving average for a symbol.
 
 ```
-curl http://3.17.79.135:8000/prices/latest\?symbol\=CRM
+curl http://<ip>:8000/prices/latest\?symbol\=CRM
 
 curl -X POST http://<ip>:8000/prices/poll \
   -H "Content-Type: application/json" \
