@@ -18,12 +18,11 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Build and push Docker image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: Dockerfile
-          push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/market-data-service:latest
+        run: |
+          docker buildx build \
+            --file Dockerfile \
+            --tag ${{ secrets.DOCKER_USERNAME }}/market-data-service:latest \
+            --push .
 
   deploy:
     needs: build-and-push
