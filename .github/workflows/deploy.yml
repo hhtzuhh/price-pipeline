@@ -72,6 +72,12 @@ jobs:
             # and ensure error propagation
             set -euo pipefail
 
+            echo "--- Debugging REPO_NAME ---"
+            echo "Value of REPO_NAME on EC2: '${REPO_NAME}'"
+            echo "Expected full clone URL: 'https://github.com/${REPO_NAME}.git'"
+            echo "--- End Debugging ---"
+
+
             # Create the project directory if it doesn't exist
             mkdir -p ~/my-project
             cd ~/my-project
