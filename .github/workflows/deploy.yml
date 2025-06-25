@@ -117,4 +117,4 @@ jobs:
             # Log out from Docker Hub
             docker logout
             echo "Logged out from Docker Hub."
-EOT
+          EOT
