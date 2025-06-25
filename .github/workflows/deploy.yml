@@ -1,0 +1,94 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Login to Docker Hub
+        uses: docker/login-action@v4
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: Dockerfile
+          push: true
+          tags: ${{ secrets.DOCKER_USERNAME }}/market-data-service:latest
+
+  deploy:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.9.0 # Action to set up SSH agent with your private key
+        with:
+          ssh-private-key: ${{ secrets.EC2_SSH_KEY }} # Use EC2 SSH private key from GitHub Secrets
+
+      - name: Add EC2 to known hosts
+        run: |
+          mkdir -p ~/.ssh # Ensure .ssh directory exists
+          ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts # Add EC2 host to known_hosts to avoid host key checking prompts
+          chmod 600 ~/.ssh/known_hosts # Set correct permissions for known_hosts file
+
+      - name: Deploy to EC2
+        env:
+          # Pass environment variables from GitHub Secrets to the SSH session
+          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          # Add any other sensitive environment variables here
+        run: |
+          # SSH into the EC2 instance and execute commands
+          ssh ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
+            # Create the project directory if it doesn't exist
+            mkdir -p ~/my-project
+            cd ~/my-project
+
+            # Clone or pull the latest code from your GitHub repository
+            # This ensures the docker-compose.yml file is up-to-date
+            if [ -d .git ]; then
+              git pull
+            else
+              git clone [https://github.com/$](https://github.com/$){{ github.repository }}.git .
+            fi
+
+            # Create or update the .env file on the EC2 instance using the passed GitHub Secrets
+            echo "POSTGRES_DB=$POSTGRES_DB" > .env
+            echo "POSTGRES_USER=$POSTGRES_USER" >> .env
+            echo "POSTGRES_PASSWORD=$POSTGRES_PASSWORD" >> .env
+            echo "ALPHA_VANTAGE_API_KEY=$ALPHA_VANTAGE_API_KEY" >> .env
+            echo "KAFKA_BOOTSTRAP_SERVERS=$KAFKA_BOOTSTRAP_SERVERS" >> .env
+            echo "DATABASE_URL=$DATABASE_URL" >> .env
+
+
+            # Log in to Docker Hub on the EC2 instance to pull private images if necessary
+            # (Though public images don't strictly require this, it's good practice for consistency)
+            echo "${{ secrets.DOCKER_PASSWORD }}" | docker login --username ${{ secrets.DOCKER_USERNAME }} --password-stdin
+
+            # Pull the latest Docker images as defined in docker-compose.yml
+            docker compose pull
+
+            # Bring up the Docker services in detached mode, removing any old orphaned containers
+            docker compose up -d --remove-orphans
+
+            # Clean up Docker images not used by any container (optional, helps save disk space)
+            docker image prune -f
+
+            # Log out from Docker Hub
+            docker logout
+          EOF
+
+
