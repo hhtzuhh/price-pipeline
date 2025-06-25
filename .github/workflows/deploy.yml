@@ -4,6 +4,11 @@ on:
   push:
     branches:
       - main
+    paths-ignore: # <--- ADD THIS BLOCK
+      - '**.md'   # Ignore any Markdown file (like README.md) anywhere in the repo
+      - 'docs/**' # Ignore any files in a 'docs' directory
+      - 'LICENSE' # Ignore the LICENSE file
+      - '.gitignore' # Ignore .gitignore
 
 jobs:
   build-and-push:
